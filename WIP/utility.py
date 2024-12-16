@@ -12,23 +12,30 @@ class Node():
     content = None
 
 
-    def __init__(self) -> None:
-        return True
+    def __init__(self, id) -> None:
+        self.id = id
     
     def __init_subclass__(cls) -> None:
         pass
 
+
     def __repr__(self) -> str:
-        pass
+        return str(self.id)
 
     def __str__(self) -> str:
-        pass
+        return str(f"{self.id}-{self.name}")
 
     def __eq__(self, __value: object) -> bool:
-        pass
+        if self.name == __value.name and self.content == __value.content and self.links == __value.links:
+            return True
+        else:
+            return False
 
     def set_contents(self, contents):
         self.content = contents
+
+    def set_name(self, name):
+        self.name = name
 
 
     #A link is a different object. It contains a start point, an end point, and a type. The link can either be from or to the node. 
@@ -53,12 +60,24 @@ class Link():
     end = None
 
     #all links must at the least have a starting node. A link with no terminal is a possible, but not actualised, connection.
-    def __init__(self, node) -> None:
+    def __init__(self, node, id) -> None:
         self.start = node
+        self.id = id
+
+    def __repr__(self) -> str:
+        return f"{self.id}:{self.nature}"
+
+    def __str__(self) -> str:
+        return f"{self.start}-[{self.nature}]->{self.end}"
+    
+    
 
     #terminal of the link. Each link can only have one starting node, and one ending node. These nodes can also act as greater subgroup of several nodes.
     def set_end(self, node) -> None:
         self.end = node
+
+    def get_end(self) -> Node:
+        return self.end
 
 
     #A nature is a type of fixed, limited domain of features. It would be best represented as some type of enum.
@@ -87,13 +106,49 @@ class Tree():
 
 
     #The minimal tree is a Node -> Node
-    def __init__(self, node_1:Node, node_2:Node, link:Link) -> bool:
+    def __init__(self, node_1:Node, node_2:Node, link:Link) -> None:
         self.nodes.append(node_1)
         self.nodes.append(node_2)
         self.links.append(link)
-        if link.start == node_1 and link.end == node_2:
-            return True
-        else:
-            return False
         
+    def get_nodes(self) -> Node:
+        return self.nodes
+        
+    def get_links(self) -> Link:
+        return self.links
     
+    def add_node(self, node:Node):
+        self.nodes.append(node)
+    
+    def remove_node(self, id):
+        removal = None
+        for node in self.nodes:
+            if node.id == id:
+                removal = node
+                break
+        if removal:
+            self.nodes.remove(removal)
+
+    def add_link(self, link:Link):
+        if link.end:
+            if link.get_end() not in self.nodes:
+                self.add_node(link.get_end())
+        self.links.append(link)
+    
+    def remove_link(self, id):
+        removal = None
+        for link in self.links:
+            if link.id == id:
+                removal = link
+                break
+        if removal:
+            self.links.remove(removal)
+
+
+    def __str__(self) -> str:
+        tree_str = ""
+        for link in self.links:
+            tree_str += str(link) + "\n"
+
+        tree_str = tree_str.strip()
+        return tree_str
