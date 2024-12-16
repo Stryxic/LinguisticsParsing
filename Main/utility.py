@@ -78,6 +78,9 @@ class Link():
 
     def get_end(self) -> Node:
         return self.end
+    
+    def get_id(self) -> int:
+        return self.id
 
 
     #A nature is a type of fixed, limited domain of features. It would be best represented as some type of enum.
@@ -136,13 +139,13 @@ class Tree():
         self.links.append(link)
     
     def remove_link(self, id):
-        removal = None
-        for link in self.links:
-            if link.id == id:
-                removal = link
-                break
-        if removal:
-            self.links.remove(removal)
+        pos = 0
+        for i in range (0, len(self.links)):
+            link = self.links[i]
+            if link.get_id() == id:
+                pos = i
+        if pos:
+            self.links.pop(pos)
 
 
     def __str__(self) -> str:

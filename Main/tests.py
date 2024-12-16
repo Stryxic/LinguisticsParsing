@@ -61,3 +61,22 @@ print(test_tree.get_nodes())
 test_tree.add_link(test_link_2)
 print(test_tree.get_nodes())
 print(test_tree.get_links())
+test_tree.remove_link(3)
+print(test_tree.get_links())
+
+
+#Testing different interactions
+
+test_link_4 = Link(test_node_2, 4)
+test_node_4 = Node(4)
+test_node_4.set_contents(3)
+test_node_4.set_name("three")
+test_link_4.set_end(test_node_4)
+test_link_4.set_nature("BEFORE")
+print(test_link_4)
+
+#adding the link but not node to the tree, to test if the tree adds it to its nodes
+
+print(test_tree.get_nodes())
+test_tree.add_link(test_link_4)
+print(test_tree.get_nodes())
