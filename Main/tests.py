@@ -175,3 +175,26 @@ for tree in tree_nodes:
     for link in tree_links:
         print(link)
         print(f"\t{link.get_terminals()}")
+
+#Now we know the trees work as expected. Each tree contains a list of nodes, and links. It traverses the tree, showing all continuous links. Then each link is created in successeion.
+
+#Next step: Make a links from all these nodes, similar to before. Note to self: Might be good to move this [general node->link generation] into utility.
+print("---------")
+tree_links = converter.build_links(tree_nodes)
+
+tree_id = 98
+paragraph_tree = Tree(tree_nodes[0], tree_nodes[1], tree_links[0], tree_id)
+
+for node in tree_nodes[2:]:
+    paragraph_tree.add_node(node)
+
+for link in tree_links[1:]:
+    paragraph_tree.add_link(link)
+
+#Here we have the resulting total paragraph tree. Now to test iteration through nodes.
+print(paragraph_tree)
+
+
+
+
+

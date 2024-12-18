@@ -85,4 +85,6 @@ class Converter():
     def get_trees(self):
         return self.trees
         
+    def set_trees(self, trees):
+        self.trees = trees
 
