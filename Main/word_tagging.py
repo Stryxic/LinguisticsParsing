@@ -8,9 +8,11 @@ class Converter():
     sentences = []
     tags = []
     sentence_tags = []
+    trees = []
     nodes = []
     node_id = 0
     link_id = 0
+    tree_id = 0
 
     def __init__(self, text) -> None:
         self.text = text
@@ -56,35 +58,46 @@ class Converter():
         return nodes
 
     
-    def build_tree(self, nodes):
+    def build_links(self, nodes):
         links = []
-        firstNode = None
+        prior_link = None
+        pos = ["START","END"]
         for i in range (0, len(nodes)):
             self.link_id +=1
             node = nodes[i]
+            link = Link(node, self.link_id)
+            link.set_nature("BEFORE")
+            if prior_link:
+                prior_link.set_end(node)
+                links.append(prior_link)
+            prior_link = link
+        
+        links.append(prior_link)
+        return links
 
-            if firstNode:
-                link.set_end(node)
-                link.set_nature("BEFORE")
-                links.append(link)
-                link = Link(node, self.link_id)
-            else:
-                firstNode = node
-                link = Link(node, self.link_id)
+
+
+            
+
+
+            # if firstNode:
+            #     link.set_end(node)
+            #     link.set_nature("BEFORE")
+            #     links.append(link)
+            #     link = Link(node, self.link_id)
+            # else:
+            #     firstNode = node
+            #     link = Link(node, self.link_id)
 
         if links:
             link.set_nature("BEFORE")
             links.append(link)
 
         
-        print(links, nodes)
-        tree = Tree(nodes[0], nodes[1], links[0])
-        for node in nodes[2:]:
-            tree.add_node(node)
+        # print(links, nodes)
+        return links
 
-        for link in links[1:]:
-            tree.add_link(link)
-
-        print(tree)
+    def get_trees(self):
+        return self.trees
         
 

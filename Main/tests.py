@@ -52,7 +52,7 @@ print(test_link==test_link_3)
 
 #Testing trees
 
-test_tree = Tree(test_node, test_node_2, test_link)
+test_tree = Tree(test_node, test_node_2, test_link, 1)
 
 print(test_tree)
 print(test_tree.get_nodes())
@@ -114,7 +114,6 @@ nouns = converter.get_nouns()
 
 #The starting noun is likely the head noun. From noun to noun, each is created as a node (or reused) and linked to the prior.
 
-
 print(nouns)
 
 #Testing sentence splitting
@@ -123,15 +122,26 @@ converter.tag_sentences()
 sentences = converter.get_sentence_nouns()
 for sentence in sentences:
     nodes = converter.build_nodes(sentence)
-    print(sentence)
     print(nodes)
+    print(sentence)
+    links = converter.build_links(nodes)
+    print(links)
+    for link in links:
+        if link:
+            print(link.get_terminals())
     #Displaying stored node names (their type of noun) and contents (the noun itself)
-    for node in nodes:
-        print(node.get_name(), node.get_contents())
+    # for node in nodes:
+    #     print(node.get_name(), node.get_contents())
 
     #Testing the conversion of a set of nodes into linked nodes
-    converter.build_tree(nodes)
+    # print(nodes)
+#     converter.build_tree(nodes)
+
+# trees = converter.get_trees()
     
+# for tree in trees:
+#     print(tree)
+#     print("-----")
 
 
     

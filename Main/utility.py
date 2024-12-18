@@ -87,6 +87,11 @@ class Link():
     def get_id(self) -> int:
         return self.id
 
+    def get_terminals(self):
+        if self.end:
+            return (self.start.get_contents(), self.end.get_contents())
+        else:
+            return self.start.get_contents()
 
     #A nature is a type of fixed, limited domain of features. It would be best represented as some type of enum.
     def set_nature(self, nature) -> None:
@@ -114,10 +119,11 @@ class Tree():
 
 
     #The minimal tree is a Node -> Node
-    def __init__(self, node_1:Node, node_2:Node, link:Link) -> None:
+    def __init__(self, node_1:Node, node_2:Node, link:Link, id) -> None:
         self.nodes.append(node_1)
         self.nodes.append(node_2)
         self.links.append(link)
+        self.id = id
         
     def get_nodes(self) -> Node:
         return self.nodes
