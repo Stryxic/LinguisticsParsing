@@ -49,6 +49,11 @@ class Node():
                 children.append(link)
         return children
 
+    def get_name(self):
+        return self.name
+    
+    def get_contents(self):
+        return self.content
 
 
 #Link - Any connection between one Node and another Node

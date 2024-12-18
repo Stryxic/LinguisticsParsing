@@ -1,12 +1,16 @@
 #This will handle the conversion of text into a series of nouns. This task is done a lot and will be a frequent test case, so it is implemented now.
 import nltk
 from nltk.corpus import wordnet
+from utility import *
 
 class Converter():
     text = ""
     sentences = []
     tags = []
     sentence_tags = []
+    nodes = []
+    node_id = 0
+    link_id = 0
 
     def __init__(self, text) -> None:
         self.text = text
@@ -38,3 +42,49 @@ class Converter():
             noun_tags = [x for x in sentence if x[1][0:2] == "NN"]
             tagged_sentences.append(noun_tags)
         return(tagged_sentences)
+    
+    def build_nodes(self, sentence):
+        nodes = []
+        for pair in sentence:
+            word = pair[0]
+            noun_type = pair[1]
+            self.node_id += 1
+            word_node = Node(self.node_id)
+            word_node.set_name(noun_type)
+            word_node.set_contents(word)
+            nodes.append(word_node)
+        return nodes
+
+    
+    def build_tree(self, nodes):
+        links = []
+        firstNode = None
+        for i in range (0, len(nodes)):
+            self.link_id +=1
+            node = nodes[i]
+
+            if firstNode:
+                link.set_end(node)
+                link.set_nature("BEFORE")
+                links.append(link)
+                link = Link(node, self.link_id)
+            else:
+                firstNode = node
+                link = Link(node, self.link_id)
+
+        if links:
+            link.set_nature("BEFORE")
+            links.append(link)
+
+        
+        print(links, nodes)
+        tree = Tree(nodes[0], nodes[1], links[0])
+        for node in nodes[2:]:
+            tree.add_node(node)
+
+        for link in links[1:]:
+            tree.add_link(link)
+
+        print(tree)
+        
+

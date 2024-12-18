@@ -119,6 +119,20 @@ print(nouns)
 
 #Testing sentence splitting
 converter.tag_sentences()
+#Testing converting sentences to nouns, then building nodes
 sentences = converter.get_sentence_nouns()
 for sentence in sentences:
+    nodes = converter.build_nodes(sentence)
     print(sentence)
+    print(nodes)
+    #Displaying stored node names (their type of noun) and contents (the noun itself)
+    for node in nodes:
+        print(node.get_name(), node.get_contents())
+
+    #Testing the conversion of a set of nodes into linked nodes
+    converter.build_tree(nodes)
+    
+
+
+    
+    
