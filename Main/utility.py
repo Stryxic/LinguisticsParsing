@@ -14,6 +14,9 @@ class Node():
 
     def __init__(self, id) -> None:
         self.id = id
+        self.links = []
+        self.content = None
+        self.name = ""
     
     def __init_subclass__(cls) -> None:
         pass
@@ -68,6 +71,8 @@ class Link():
     def __init__(self, node, id) -> None:
         self.start = node
         self.id = id
+        self.nature = None
+        self.end = None
 
     def __repr__(self) -> str:
         return f"{self.id}:{self.nature}"
@@ -84,14 +89,17 @@ class Link():
     def get_end(self) -> Node:
         return self.end
     
+    def get_start(self) -> Node:
+        return self.start
+    
     def get_id(self) -> int:
         return self.id
 
     def get_terminals(self):
         if self.end:
-            return (self.start.get_contents(), self.end.get_contents())
+            return [self.start.get_contents(), self.end.get_contents()]
         else:
-            return self.start.get_contents()
+            return [self.start.get_contents()]
 
     #A nature is a type of fixed, limited domain of features. It would be best represented as some type of enum.
     def set_nature(self, nature) -> None:
@@ -120,6 +128,8 @@ class Tree():
 
     #The minimal tree is a Node -> Node
     def __init__(self, node_1:Node, node_2:Node, link:Link, id) -> None:
+        self.nodes = []
+        self.links = []
         self.nodes.append(node_1)
         self.nodes.append(node_2)
         self.links.append(link)
@@ -166,3 +176,16 @@ class Tree():
 
         tree_str = tree_str.strip()
         return tree_str
+    
+    #Gives a better representation for the whole tree, without overriding _repr_ if I need it later.
+    def traverse_tree(self) -> str:
+        output_str = ""
+        for link in self.links:
+            terminals = link.get_terminals()
+            if len(terminals) == 2:
+                if output_str:
+                    output_str += f"{terminals[1]}#{link.get_end().get_name()}->"
+                else:
+                    output_str += f"{terminals[0]}#{link.get_start().get_name()}->{terminals[1]}#{link.get_end().get_name()}->"
+        return output_str
+

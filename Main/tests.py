@@ -120,29 +120,43 @@ print(nouns)
 converter.tag_sentences()
 #Testing converting sentences to nouns, then building nodes
 sentences = converter.get_sentence_nouns()
+tree_id = 0
+trees = []
 for sentence in sentences:
+    #Convert the sentence into singular nodes, each noun = one node.
     nodes = converter.build_nodes(sentence)
     print(nodes)
     print(sentence)
+    #Constructs an array of links from the nodes
     links = converter.build_links(nodes)
     print(links)
+    #Testing to check each link has each word on either end
     for link in links:
         if link:
             print(link.get_terminals())
-    #Displaying stored node names (their type of noun) and contents (the noun itself)
-    # for node in nodes:
-    #     print(node.get_name(), node.get_contents())
 
-    #Testing the conversion of a set of nodes into linked nodes
-    # print(nodes)
-#     converter.build_tree(nodes)
+    #Adding fuctionality to construct trees from these links + nodes
+    if nodes:
+        first_node = nodes[0]
+        second_node = nodes[1]
+        link = links[0]
+        # print(f"{first_node} | {second_node} | {link}")
+        tree_id += 1
+        tree = Tree(first_node, second_node, link, tree_id)
+        remaining_nodes = nodes[2:]
+        remaining_links = links[1:]
+        if remaining_nodes:
+            for node in remaining_nodes:
+                tree.add_node(node)
+        if remaining_links:
+            for link in remaining_links:
+                tree.add_link(link)
+        # print(tree)
+        trees.append(tree)
 
-# trees = converter.get_trees()
     
-# for tree in trees:
-#     print(tree)
-#     print("-----")
 
 
     
-    
+for tree in trees:
+    print(tree.traverse_tree())

@@ -17,6 +17,13 @@ class Converter():
     def __init__(self, text) -> None:
         self.text = text
         self.sentences = text.split(".")
+        self.tags = []
+        self.sentence_tags = []
+        self.trees = []
+        self.nodes = []
+        self.node_id = 0
+        self.link_id = 0
+        self.tree_id = 0
 
     #Here I will add the nltk pos tagger, then iterate through all those nouns and add nodes. 
     def tag(self):
@@ -73,28 +80,6 @@ class Converter():
             prior_link = link
         
         links.append(prior_link)
-        return links
-
-
-
-            
-
-
-            # if firstNode:
-            #     link.set_end(node)
-            #     link.set_nature("BEFORE")
-            #     links.append(link)
-            #     link = Link(node, self.link_id)
-            # else:
-            #     firstNode = node
-            #     link = Link(node, self.link_id)
-
-        if links:
-            link.set_nature("BEFORE")
-            links.append(link)
-
-        
-        # print(links, nodes)
         return links
 
     def get_trees(self):
