@@ -189,3 +189,38 @@ class Tree():
                     output_str += f"{terminals[0]}#{link.get_start().get_name()}->{terminals[1]}#{link.get_end().get_name()}->"
         return output_str
 
+class TreeParser():
+    tree = None
+    noun_list = []
+    def __init__(self, tree):
+        self.tree = tree
+
+    def parse_tree(self):
+        links = self.tree.get_links()
+        for link in links:
+            start_node = link.get_start()
+            end_node = link.get_end()
+
+
+    def parse_tree_node(self, node):
+        node_links = node.get_links()
+        if node_links: 
+            for link in node_links:
+                first_node = link.get_start()
+                second_node = link.get_end()
+                self.parse_node(first_node)
+                if second_node:
+                    self.parse_node(second_node)
+
+    def parse_text_node(self, node):
+        noun_type = node.get_name()
+        noun = node.get_content()
+        self.noun_list.append([noun,noun_type])
+
+    def parse_node(self, node):
+        node_name = node.get_name()
+        if node_name == "Tree":
+            self.parse_tree_node(node)
+        else:
+            self.parse_text_node(node)
+

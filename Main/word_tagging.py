@@ -32,6 +32,8 @@ class Converter():
         self.tags = pos_tags
         return pos_tags
     
+    #Iterates through the sentence (In raw text), applies python nltk to turn it into tags, then stores that result
+    
     def tag_sentences(self):
         sentence_tags = []
         for sentence in self.sentences:
@@ -40,11 +42,12 @@ class Converter():
             sentence_tags.append(pos_tags)
         self.sentence_tags = sentence_tags
 
-    
+    #Cheap pythonic invocation to see if the first two characters of the tag is NN (Noun)
     def get_nouns(self):
         noun_tags = [x for x in self.tags if x[1][0:2] == "NN"]
         return noun_tags
     
+    #Similar process, but in an array
     def get_sentence_nouns(self):
         tagged_sentences = []
         for sentence in self.sentence_tags:
@@ -52,6 +55,8 @@ class Converter():
             tagged_sentences.append(noun_tags)
         return(tagged_sentences)
     
+
+    #For each word in the sentence, create a node.
     def build_nodes(self, sentence):
         nodes = []
         for pair in sentence:
@@ -64,7 +69,7 @@ class Converter():
             nodes.append(word_node)
         return nodes
 
-    
+    #For each node in the list, make a link. Either attach the current node to the prior link, or not.
     def build_links(self, nodes):
         links = []
         prior_link = None

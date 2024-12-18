@@ -86,7 +86,8 @@ links = test_tree.get_links()
 for link in links:
     print(link)
 
-paragraph_1 = '''Bali is predominantly a Hindu country. Bali is known for its elaborate, traditional dancing. 
+paragraph_1 = '''Bali is predominantly a Hindu country. 
+Bali is known for its elaborate, traditional dancing. 
 The dancing is inspired by its Hindi beliefs. 
 Most of the dancing portrays tales of good versus evil. 
 To watch the dancing is a breathtaking experience. 
@@ -192,9 +193,11 @@ for link in tree_links[1:]:
     paragraph_tree.add_link(link)
 
 #Here we have the resulting total paragraph tree. Now to test iteration through nodes.
+
+print("List of all the nodes + Links in each tree:")
 print(paragraph_tree)
 
-
-
+print("Traversing the total paragraph tree.")
+print(paragraph_tree.traverse_tree())
 
 
