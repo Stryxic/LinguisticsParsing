@@ -201,3 +201,15 @@ print("Traversing the total paragraph tree.")
 print(paragraph_tree.traverse_tree())
 
 
+#Now that the tree is created, we parse it.
+
+parser = TreeParser(paragraph_tree)
+parser.parse_tree()
+#Get all the nouns from the tree
+nouns = parser.get_nouns()
+print(nouns)
+print("-----------")
+#Print their counts
+count = parser.get_counts()
+print(count)
+

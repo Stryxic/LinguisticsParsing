@@ -189,38 +189,67 @@ class Tree():
                     output_str += f"{terminals[0]}#{link.get_start().get_name()}->{terminals[1]}#{link.get_end().get_name()}->"
         return output_str
 
+
+#Parsing the tree we just made.
 class TreeParser():
     tree = None
     noun_list = []
+    noun_dict = {}
+    #Storing a list of all nouns, and the count.
     def __init__(self, tree):
         self.tree = tree
+        self.noun_list = []
+        self.noun_dict = {}
 
+    #Check what kind of node it is, and parse it.
     def parse_tree(self):
         links = self.tree.get_links()
         for link in links:
             start_node = link.get_start()
             end_node = link.get_end()
+            self.parse_node(start_node, 1)
+            if end_node:
+                self.parse_node(end_node, 2)
+        self.count_nouns()
 
-
+    #Trees have nodes to be parsed, so recusrively call the parse node function
     def parse_tree_node(self, node):
-        node_links = node.get_links()
+        tree = node.get_contents()
+        node_links = tree.get_links()
         if node_links: 
             for link in node_links:
                 first_node = link.get_start()
                 second_node = link.get_end()
-                self.parse_node(first_node)
+                self.parse_node(first_node, 1)
                 if second_node:
-                    self.parse_node(second_node)
+                    self.parse_node(second_node, 2)
 
+    #Text contains a noun, and a noun type
     def parse_text_node(self, node):
         noun_type = node.get_name()
-        noun = node.get_content()
+        noun = node.get_contents()
         self.noun_list.append([noun,noun_type])
 
-    def parse_node(self, node):
+    #A node can either be a tree, or text.
+    def parse_node(self, node, pos):
         node_name = node.get_name()
-        if node_name == "Tree":
-            self.parse_tree_node(node)
-        else:
-            self.parse_text_node(node)
+        if pos == 1:
+            if node_name == "Tree":
+                self.parse_tree_node(node)
+            else:
+                self.parse_text_node(node)
 
+    def get_nouns(self):
+        return self.noun_list
+    
+    #Simple pythonic invocation to convert a list into a count
+    def count_nouns(self):
+        for noun in self.noun_list:
+            noun = noun[0].lower()
+            if noun in self.noun_dict.keys():
+                self.noun_dict[noun] += 1
+            else:
+                self.noun_dict[noun] = 1
+                
+    def get_counts(self):
+        return self.noun_dict
