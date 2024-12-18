@@ -157,6 +157,21 @@ for sentence in sentences:
     
 
 
-    
+tree_node_id = 77
+tree_nodes = []
 for tree in trees:
+    tree_node = Node(tree_node_id)
+    tree_node_id+=1
+    tree_node.set_contents(tree)
+    tree_node.set_name("Tree")
+    tree_nodes.append(tree_node)
     print(tree.traverse_tree())
+
+for tree in tree_nodes:
+    print(tree)
+    tree_obj = tree.get_contents()
+    print(tree_obj.traverse_tree())
+    tree_links = tree_obj.get_links()
+    for link in tree_links:
+        print(link)
+        print(f"\t{link.get_terminals()}")
