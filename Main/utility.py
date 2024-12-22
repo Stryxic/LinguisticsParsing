@@ -43,6 +43,9 @@ class Node():
     def set_name(self, name):
         self.name = name
 
+    def change_id(self, id):
+        self.id = id
+
 
     #A link is a different object. It contains a start point, an end point, and a type. The link can either be from or to the node. 
     def add_link(self, link):
@@ -279,6 +282,7 @@ class Document():
     current_ratio = 0
     definitions = {}
     read_words = []
+    tree = None
     #Definitions are going to be a special case for a sentence with only two nouns. They are directly related, and so a preposition is formed from them.
 
     def __init__(self, text):
@@ -288,6 +292,7 @@ class Document():
         self.dataframe = None
         self.definitions = {}
         self.read_words = []
+        self.tree = None
 
     def find_sentences(self):
         sentences = self.text.split(".")
@@ -418,10 +423,35 @@ class Document():
             print(word_node, related_node)
         node_contents = [x.get_contents() for x in word_nodes]
         unique_words = []
+        tree_node_id = 1
+        link_id = 1
+        node_one = word_nodes[0]
+        node_one.change_id(tree_node_id)
+        tree_node_id += 1
+        first_link = Link(node_one, link_id)
+        link_id += 1
+        node_two = None
+        tree_nodes = {}
+
+        tree_nodes[node_one.get_contents()] = node_one
         for content in node_contents:
             if content not in unique_words:
                 unique_words.append(content)
-                print(node_contents.index(content))
+                if len(unique_words) == 2:
+                    node_two = word_nodes[node_contents.index(content)]
+                    node_two.change_id(tree_node_id)
+                    tree_nodes[content] = node_two
+                    first_link.set_end(node_two)
+                    self.tree = Tree(node_one, node_two, first_link, 1)
+                if self.tree:
+                    tree_node = Node(tree_node_id)
+                    tree_node_id += 1
+                    tree_node.set_name("Word")
+                    tree_node.set_contents(content)
+                    related_word = self.definitions[content]
+                    print(content, related_word)
+
+                # print(node_contents.index(content))
         
         print(word_nodes)
         print(word_node_dict)
