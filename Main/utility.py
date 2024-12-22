@@ -278,6 +278,7 @@ class Document():
     dataframe = None
     current_ratio = 0
     definitions = {}
+    read_words = []
     #Definitions are going to be a special case for a sentence with only two nouns. They are directly related, and so a preposition is formed from them.
 
     def __init__(self, text):
@@ -286,6 +287,7 @@ class Document():
         self.ratios = {}
         self.dataframe = None
         self.definitions = {}
+        self.read_words = []
 
     def find_sentences(self):
         sentences = self.text.split(".")
@@ -312,57 +314,64 @@ class Document():
         return math.sqrt(abs(squared_val))
 
 
-
+    #Main function to process the text stored in the document. 
+    #It requires self.ratios to function, and converts the written text
+    #into a series of initial definitions based on the text+ratios.
+    #It does not need to return anything, as it is operating on self.
+    
     def process_text(self):
-        read_words = []
+        #Defining an array to hold each word in the document
+        #read_words = []
+        #Iterating through each sentence in the paragraph
         for sentence in self.sentences:
             print("------")
+            #Array for each word in the sentence
             sentence_words = []
             words = sentence.lower().split(" ")
             cleaned_words = [x.strip() for x in words if x]
+            #removing whitespace
             for word in cleaned_words:
+                #If there is a relation known
                 if word in self.ratios:
+                    #find the ratio of word occurence in the overall document
                     ratio = self.dataframe.loc[word]
                     value = ratio.values[0]
-                    read_words.append([word, value])
+                    #Add it to the total list, and current iteration list
+                    self.read_words.append([word, value])
                     sentence_words.append([word, value])
-
+            #When iterating through, we store the prior words.
             prior_words = []
             for i in range(0, len(sentence_words)-1):
                 word = sentence_words[i]
                 word = word[0]
                 prior_words.append(word)
-                # print(word)
-                # if prior_words:
-                #     # self.find_min_diff(word, prior_words)
-                #     prior_words.append(word)
-                # else:
-                #     prior_words.append(word)
+
+            #If there are nouns in the sentence
             if sentence_words:
                 print(f"Prior words: {prior_words} | Last word: {sentence_words[-1]}")
                 available_links = {}
+                #Last noun = last word in the sentence
                 last_word = sentence_words[-1]
+                #Each word is checked against all the words that have come before it in that sentence
                 for word in prior_words:
                     value = self.dataframe.loc[word].values[0]
                     available_links[word] = value
                 link_df = pd.DataFrame.from_dict(available_links, orient="index")
                 self.current_ratio = last_word[1]
-                # link_df.values
-                #available_links[last_word[0]] = last_word[1]
-
-                # print(link_df.values)
-
                 outputs = [self.find_diff(x[0]) for x in link_df.values]
                 outputs_nonzero = [x for x in outputs if x > 0]
+                #Finding the similarity between the last words value, and each prior word. Selecting the smallest difference.
                 if outputs_nonzero:
                     min_val = min(outputs_nonzero)
                 else:
                     min_val = 0
                 
+                #If no nonzero value is found, defaults to the first noun in the sentence.
                 occurance = outputs.index(min_val)
 
+                #Finds its position in the list
                 linked_word = sentence_words[occurance]
-
+                # If a sentence is of the form x is y, that is a simple, base case relation. If there are more words, then either it uses a prior definition, or the new word.
                 if len(sentence_words) == 2:
                     self.definitions[linked_word[0]] = last_word[0]
                 else:
@@ -370,20 +379,58 @@ class Document():
                         pos = list(self.definitions.values()).index(last_word[0])
                         key_word = list(self.definitions.keys())[pos]
                         self.definitions[linked_word[0]] = key_word
-
-                # min_val = min(x for x in outputs if x>0)
-                # print(f"{linked_word[0]} {last_word[0]}")
-                    
-                        
-        print(self.definitions)
-
-
-        # print(read_words)
+                    else:
+                        self.definitions[linked_word[0]]=last_word[0]
     
+    def build_root(self):
+        #Converting all nouns into just the ones which we have links for.
+        word_order = [x[0] for x in self.read_words if x[0] in self.definitions.keys()]
+        word_nodes = []
+        word_links = []
+        word_node_dict = {}
+        node_id = 1
+        for word in word_order:
+            word_node = Node(node_id)
+            if word not in word_node_dict.keys():
+                node_id+=1
+                word_node.set_contents(word)
+                word_node.set_name("Word")
+                word_node_dict[word] = word_node
+                word_nodes.append(word_node)
+            else:
+                word_node = word_node_dict[word]
+            
+            related_word = self.definitions[word]
+
+            related_node = Node(node_id)
+            if related_word not in word_node_dict.keys():
+                node_id+=1
+                related_node.set_contents(word)
+                related_node.set_name("Word")
+                word_node_dict[related_word] = related_node
+                word_nodes.append(related_node)
+            else:
+                related_node = word_node_dict[related_word]
+
+
+
+            print(word, related_word)
+            print(word_node, related_node)
+        node_contents = [x.get_contents() for x in word_nodes]
+        unique_words = []
+        for content in node_contents:
+            if content not in unique_words:
+                unique_words.append(content)
+                print(node_contents.index(content))
         
-        # print(dataframe)
-        # for noun in self.ratios.keys():
-        #     ratio = self.ratios[noun]
+        print(word_nodes)
+        print(word_node_dict)
+        print(node_contents)
+        print(unique_words)
+
+
+
+
 
 
 

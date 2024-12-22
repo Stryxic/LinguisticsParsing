@@ -144,7 +144,7 @@ During Nelson Mandela’s best known speech in 1994, he recited “Our Deepest F
 Mandela initially avoided violence but ended up resorting to it following the massacre of unarmed black Africans by the government. 
 Martin Luther King Jr was assassinated in 1968.'''
 
-converter = Converter(paragraph_3)
+converter = Converter(paragraph_1)
 
 converter.tag()
 nouns = converter.get_nouns()
@@ -194,7 +194,7 @@ for sentence in sentences:
     
 
 
-tree_node_id = 77
+tree_node_id = 1
 tree_nodes = []
 for tree in trees:
     tree_node = Node(tree_node_id)
@@ -264,5 +264,11 @@ document.set_ratios(ratios)
 #Testing the average of the count
 document.find_avg()
 
-#Iterating through sentences
+#Iterating through sentences, comparing their outputs when related via the earlier statistics. This dictionary forms the seed for the initial tree of the document.
 document.process_text()
+
+#Once we have the definitions, we construct a tree. Starting from the occurance of nouns in order from the start of the text using read words, we 
+#build up a tree and either add a node, add a link, or add a link and a node. Or none of the above.
+
+document.build_root()
+
