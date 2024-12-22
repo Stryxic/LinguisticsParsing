@@ -301,6 +301,9 @@ class Document():
     def set_ratios(self, ratios):
         self.ratios = ratios
 
+    def get_tree(self):
+        return self.tree
+
     def find_avg(self):
         dataframe = pd.DataFrame.from_dict(self.ratios, orient = 'index')
         dataframe = (dataframe - dataframe.mean())/dataframe.std()
@@ -419,8 +422,8 @@ class Document():
 
 
 
-            print(word, related_word)
-            print(word_node, related_node)
+            # print(word, related_word)
+            # print(word_node, related_node)
         node_contents = [x.get_contents() for x in word_nodes]
         unique_words = []
         tree_node_id = 1
@@ -429,6 +432,7 @@ class Document():
         node_one.change_id(tree_node_id)
         tree_node_id += 1
         first_link = Link(node_one, link_id)
+        first_link.set_nature("->")
         link_id += 1
         node_two = None
         tree_nodes = {}
@@ -448,15 +452,34 @@ class Document():
                     tree_node_id += 1
                     tree_node.set_name("Word")
                     tree_node.set_contents(content)
+                    self.tree.add_node(tree_node)
+                    new_link = Link(tree_node, link_id)
+                    link_id+=1
+                    new_link.set_nature("->")
                     related_word = self.definitions[content]
-                    print(content, related_word)
+                    if related_word not in unique_words:
+                        related_node = Node(tree_node_id)
+                        tree_node_id+=1
+                        related_node.set_contents(related_word)
+                        related_node.set_name("Word")
+                        self.tree.add_node(related_node)
+                        new_link.set_end(related_node)
+                        self.tree.add_link(new_link)
+                    else:
+                        related_node = tree_nodes[related_word]
+                        new_link.set_end(related_node)
+                        self.tree.add_link(new_link)
+
+            
 
                 # print(node_contents.index(content))
         
-        print(word_nodes)
-        print(word_node_dict)
-        print(node_contents)
-        print(unique_words)
+        # print(word_nodes)
+        # print(word_node_dict)
+        # print(node_contents)
+        # print(unique_words)
+        # print(self.tree)
+        # print(self.tree.traverse_tree())
 
 
 

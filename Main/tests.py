@@ -272,3 +272,13 @@ document.process_text()
 
 document.build_root()
 
+#Getting the tree
+document_tree = document.get_tree()
+
+print(document_tree)
+
+links = document_tree.get_links()
+
+for link in links:
+    print(link.get_terminals())
+
