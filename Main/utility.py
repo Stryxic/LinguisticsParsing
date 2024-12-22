@@ -3,6 +3,9 @@
 
 #Node - The basic unit of anything in the system. Very generic, abstract.
 
+import math
+import pandas as pd
+
 class Node():
 
     #Each node has an identity (an ID number), a name, zero to many links, and whatever it contains. The contents are generic, links are a specific type, id is an int, and name is a string.
@@ -195,6 +198,7 @@ class TreeParser():
     tree = None
     noun_list = []
     noun_dict = {}
+    noun_ratios = {}
     #Storing a list of all nouns, and the count.
     def __init__(self, tree):
         self.tree = tree
@@ -253,3 +257,133 @@ class TreeParser():
                 
     def get_counts(self):
         return self.noun_dict
+    
+
+    #Find the sum of all the counts, then divide each element and add it to a new dict
+    def find_ratios(self):
+        total_count = 0
+        for noun in self.noun_dict.keys():
+            total_count += self.noun_dict[noun]
+        for noun in self.noun_dict.keys():
+            self.noun_ratios[noun] = self.noun_dict[noun]/total_count
+    
+    def get_ratios(self):
+        return self.noun_ratios
+
+#Creating implementation of a document. It has text, statistics, and processes those.
+class Document():
+    text = ""
+    sentences = []
+    ratios = {}
+    dataframe = None
+    current_ratio = 0
+    definitions = {}
+    #Definitions are going to be a special case for a sentence with only two nouns. They are directly related, and so a preposition is formed from them.
+
+    def __init__(self, text):
+        self.text = text
+        self.sentences = []
+        self.ratios = {}
+        self.dataframe = None
+        self.definitions = {}
+
+    def find_sentences(self):
+        sentences = self.text.split(".")
+        self.sentences = sentences
+
+    def set_ratios(self, ratios):
+        self.ratios = ratios
+
+    def find_avg(self):
+        dataframe = pd.DataFrame.from_dict(self.ratios, orient = 'index')
+        dataframe = (dataframe - dataframe.mean())/dataframe.std()
+        self.dataframe = dataframe
+
+    def find_min_diff(self, item, items):
+        print("")
+        # item_index = items.index(item)
+        # del items[item_index]
+        # print(item, items)
+
+
+    #Small temporary function which should take in each row of the dataframe and comput similarity.
+    def find_diff(self, val):
+        squared_val = val**2 - self.current_ratio**2
+        return math.sqrt(abs(squared_val))
+
+
+
+    def process_text(self):
+        read_words = []
+        for sentence in self.sentences:
+            print("------")
+            sentence_words = []
+            words = sentence.lower().split(" ")
+            cleaned_words = [x.strip() for x in words if x]
+            for word in cleaned_words:
+                if word in self.ratios:
+                    ratio = self.dataframe.loc[word]
+                    value = ratio.values[0]
+                    read_words.append([word, value])
+                    sentence_words.append([word, value])
+
+            prior_words = []
+            for i in range(0, len(sentence_words)-1):
+                word = sentence_words[i]
+                word = word[0]
+                prior_words.append(word)
+                # print(word)
+                # if prior_words:
+                #     # self.find_min_diff(word, prior_words)
+                #     prior_words.append(word)
+                # else:
+                #     prior_words.append(word)
+            if sentence_words:
+                print(f"Prior words: {prior_words} | Last word: {sentence_words[-1]}")
+                available_links = {}
+                last_word = sentence_words[-1]
+                for word in prior_words:
+                    value = self.dataframe.loc[word].values[0]
+                    available_links[word] = value
+                link_df = pd.DataFrame.from_dict(available_links, orient="index")
+                self.current_ratio = last_word[1]
+                # link_df.values
+                #available_links[last_word[0]] = last_word[1]
+
+                # print(link_df.values)
+
+                outputs = [self.find_diff(x[0]) for x in link_df.values]
+                outputs_nonzero = [x for x in outputs if x > 0]
+                if outputs_nonzero:
+                    min_val = min(outputs_nonzero)
+                else:
+                    min_val = 0
+                
+                occurance = outputs.index(min_val)
+
+                linked_word = sentence_words[occurance]
+
+                if len(sentence_words) == 2:
+                    self.definitions[linked_word[0]] = last_word[0]
+                else:
+                    if last_word[0] in self.definitions.values():
+                        pos = list(self.definitions.values()).index(last_word[0])
+                        key_word = list(self.definitions.keys())[pos]
+                        self.definitions[linked_word[0]] = key_word
+
+                # min_val = min(x for x in outputs if x>0)
+                # print(f"{linked_word[0]} {last_word[0]}")
+                    
+                        
+        print(self.definitions)
+
+
+        # print(read_words)
+    
+        
+        # print(dataframe)
+        # for noun in self.ratios.keys():
+        #     ratio = self.ratios[noun]
+
+
+

@@ -108,7 +108,43 @@ Lombok remains the most understated of the two islands.
 Lombok has several temples worthy of a visit, though they are less prolific. 
 Bali and Lombok are neighbouring islands.'''
 
-converter = Converter(paragraph_1)
+paragraph_2 = '''
+Bali and Lombok are neighbouring islands; 
+both are part of the Indonesian archipelago. 
+It is easy to appreciate each island as an attractive tourist destination – majestic scenery; rich culture; white sands and warm, azure waters draw visitors like magnets every year. 
+Snorkelling and diving around the nearby Gili Islands is magnificent, with marine fish, starfish, turtles and coral reef present in abundance. 
+Whereas Bali is predominantly a Hindu country, the inhabitants of Lombok are mostly Muslim with a Hindu minority. 
+Bali is known for its elaborate, traditional dancing which is inspired by its Hindi beliefs. 
+Most of the dancing portrays tales of good versus evil; to watch it is a breathtaking experience. 
+Art is another Balinese passion – batik paintings and carved statues make popular souvenirs. 
+Artists can be seen whittling and painting on the streets, particularly in Ubud. 
+The island is home to some spectacular temples, the most significant being the Mother Temple, Besakih. Lombok, too, has some impressive points of interest – the majestic Gunung Rinjani is an active volcano and the second highest peak in Indonesia. 
+Like Bali, Lombok has several temples worthy of a visit, though they are less prolific. 
+Lombok remains the most understated of the two islands.
+'''
+
+paragraph_3 = '''
+Martin Luther King Jr led many demonstrations against racism. 
+He delivered his message in a non-violent manner. 
+Some members of his movement later engaged in less peaceful protests. 
+Luther King was detained several times. The longest jail sentence he received was four months. 
+Martin Luther King’s famous 1963 speech, “I Have a Dream”, inspired many African-Americans to envisage a better future. 
+Luther King was an American citizen. 
+Nelson Mandela is a native South African. 
+Their dreams were the same. 
+Their battles were tumultuous. 
+Nelson Mandela was arrested in 1962 for treason. 
+He was incarcerated for twenty-seven years. 
+Nelson Mandela and Martin Luther King Jr both fought for racial equality. 
+The intolerance of white people towards black co-inhabitants was the catalyst for years of activism. 
+In 1994, Nelson Mandela became the first black president of South Africa. 
+He was the first president elected by the people. 
+Mandela and Luther King have been awarded the Nobel Peace Prize for their dedication to improving civil rights for black people. 
+During Nelson Mandela’s best known speech in 1994, he recited “Our Deepest Fear”, an inspirational poem by Marianne Williamson. 
+Mandela initially avoided violence but ended up resorting to it following the massacre of unarmed black Africans by the government. 
+Martin Luther King Jr was assassinated in 1968.'''
+
+converter = Converter(paragraph_3)
 
 converter.tag()
 nouns = converter.get_nouns()
@@ -137,7 +173,7 @@ for sentence in sentences:
             print(link.get_terminals())
 
     #Adding fuctionality to construct trees from these links + nodes
-    if nodes:
+    if len(nodes)>1:
         first_node = nodes[0]
         second_node = nodes[1]
         link = links[0]
@@ -213,3 +249,20 @@ print("-----------")
 count = parser.get_counts()
 print(count)
 
+print("----------------------")
+parser.find_ratios()
+ratios = parser.get_ratios()
+print(ratios)
+
+print("--------------------")
+
+#Testing the Document class
+
+document = Document(paragraph_1)
+document.find_sentences()
+document.set_ratios(ratios)
+#Testing the average of the count
+document.find_avg()
+
+#Iterating through sentences
+document.process_text()
