@@ -48,3 +48,6 @@ class Node:
     def get_contents(self):
         return self.content
     
+    def get_links(self):
+        return self.links
+    

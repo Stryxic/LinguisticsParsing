@@ -18,10 +18,16 @@ class Link:
         return isinstance(other, Link) and self.nature == other.nature and self.start == other.start and self.end == other.end
     
     def __hash__(self) -> int:
-        return hash(id)
+        return hash(self.id)
+    
+    def set_start(self, node):
+        self.start = node
     
     def set_end(self, node):
         self.end = node
+
+    def get_start(self):
+        return self.start
 
     def get_end(self):
         return self.end

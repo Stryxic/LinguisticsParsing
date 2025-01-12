@@ -25,6 +25,11 @@ class Tree:
             self.add_node(link.end)
         self.links.append(link)
 
+    def add_node_link(self, id, link):
+        if id in self.nodes:
+            self.nodes[id].add_link(link)
+            
+
     def remove_link(self, id):
         self.links = [link for link in self.links if link.id != id]
 
