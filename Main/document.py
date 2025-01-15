@@ -15,7 +15,7 @@ class Document():
     def trees_to_strings(self, transversal="dfs"):
         output_str = ""
         for tree in self.trees:
-            tree_traversal = tree.traverse_tree(tranversal_type=transversal)
+            tree_traversal = tree.traverse_tree(tranversal_type=transversal)[0]
             tree_contents = " ".join([x.contents for x in tree_traversal])
             output_str += tree_contents + "\n"
         return output_str        
@@ -27,7 +27,7 @@ class Document():
         result_tree_nodes = []
         result_tree_links = []
         for tree in self.trees:
-            nodes = tree.traverse_tree(tranversal_type="dfs")
+            nodes = tree.traverse_tree(tranversal_type="dfs")[0]
             for node in nodes:
                 contents = node.contents
                 if contents not in total_nouns:

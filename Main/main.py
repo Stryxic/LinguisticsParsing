@@ -4,6 +4,7 @@ from document import Document
 from link import Link
 from linknature import LinkNature
 from node import Node
+from tree import Tree
 
 
 parser = TextParser()
@@ -299,8 +300,10 @@ For a pure U-235 sphere, similar to the composition of traditional nuclear weapo
 with open("reed_ny_post.txt") as f:
     contents = f.read()
 
-
+contents = text
 #Parser is given the text to read
+
+
 parser.set_text(contents)
 
 #Text is parsed, converting into a dict of paragraphs (\n\n) which contains the array of trees for each sentence.
@@ -337,7 +340,7 @@ def nouns_to_tree(noun_sentences):
     for reduced in reduced_sentences:
         reduced_tree = tree_convert.convert_sentence(reduced)
         if reduced_tree:
-            nodes = reduced_tree.traverse_tree(tranversal_type="dfs")
+            nodes = reduced_tree.traverse_tree(tranversal_type="dfs")[0]
             print(nodes)
             node_sentence = [x.contents for x in nodes]
             print(node_sentence)
@@ -631,7 +634,19 @@ for x in node_positions:
 
 print(total_node_tree)
 print(node_dict)
+prior_node = None
 expected_nodes = set()
+root_nodes = []
+links = []
+total_nodes = []
+parent_nodes = {}
+
+def link_nodes(node_1, node_2, id):
+    new_link = Link(node_1, id, LinkNature.CHILD)
+    new_link.set_end(node_2)
+    return new_link
+
+link_id = 1
 
 for level in range(0, len(node_positions)-1):
     nodes = node_positions[level]
@@ -640,19 +655,58 @@ for level in range(0, len(node_positions)-1):
     node_objs = []
     for node in nodes:
         node_id = list(node.keys())[0]
+        node_contents = node[node_id]
         if node_id in node_dict:
             node_object = node_dict[node_id]
             node_objs.append(node_object)
+            total_nodes.append(node_object)
         else:
-            print(node)
-            print(node_id)
+            node_dict[node_id] = Node(node_id, "Noun", node_contents)
+            total_nodes.append(node_dict[node_id])
+
+        if node_contents in expected_nodes:
+            print("EXPECTED", node_contents)
+            print(prior_node, node)
+            link = None
+            if node_contents in parent_nodes:
+                if node_id in node_dict:
+                    link = link_nodes(parent_nodes[node_contents], node_dict[node_id], link_id)
+                    from_node_link = link_nodes(node_dict[node_id], parent_nodes[node_contents], link_id+1)
+                    
+                    #node_dict[node_id].add_link(link)
+                    links.append(link)
+                # else:
+                #     link = link_nodes(parent_nodes[node_contents], total_node_tree[node_id], link_id)
+                    link_id += 2
+                print(node_contents, parent_nodes[node_contents], link)
+
+
+
+            prior_node = node
+        else:
+            root_nodes.append(node)
+
+            prior_node = node
+            print("UNEXEPECTED", node)
+
+            # print(node_id)
 
     node_children = {x.contents:x.get_children() for x in node_objs}
+
+    for node in node_objs:
+        for child in node.get_children():
+            if child:
+                parent_nodes[child.contents] = node
+
     children_contents = {}
+
 
     for child in node_children:
         related_nodes = node_children[child]
-        children_contents[child] = [x.contents for x in related_nodes]
+
+
+
+        children_contents[child] = [x.contents for x in related_nodes if x]
     #children_content = [node_children[x] for x in node_children]
     if children_contents:
         total_vals = []
@@ -668,8 +722,47 @@ for level in range(0, len(node_positions)-1):
         # for x in children_contents:
 
         # print(children_contents)
-
+print(parent_nodes)
 print(expected_nodes)
+print(root_nodes)
+print(links)
+print(total_nodes)
+
+spanning_tree = Tree(total_nodes[0], total_nodes[1], links[0], 1)
+
+for node in total_nodes[2:]:
+    spanning_tree.add_node(node)
+
+for link in links[1:]:
+    spanning_tree.add_link(link)
+
+output = spanning_tree.tree_to_string()
+
+
+span_links = output[0]
+depth_nodes = output[1]
+total_contents = output[2]
+
+print(span_links)
+print(depth_nodes)
+print(total_contents)
+depth = 0
+output_string = ""
+for x in depth_nodes:
+    print(depth)
+    output_string += f"{depth}: "
+    depth += 1
+    for node in x:
+        node_id = node.id
+        if node_id in node_dict:
+            node_from_dict = node_dict[node_id]
+            children = node_from_dict.get_children()
+            children_in_total = [x.content for x in children if x.content in total_contents]
+            output_string += "\t"*depth + f"{node.content}->{', '.join(children_in_total)} "
+    output_string += "\n"
+
+print(output_string)
+
     # print(node_children)
         # print(total_node_tree[node_id])
         # print(total_node_tree[list(node.keys())[0]])
@@ -686,5 +779,5 @@ print(expected_nodes)
     # print("-------")
 
 
-print (node_dict[contents_to_id["coronavirus"]].get_children()[0].contents)
+# print (node_dict[contents_to_id["coronavirus"]].get_children()[0].contents)
 # print(result)
