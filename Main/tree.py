@@ -41,7 +41,7 @@ class Tree:
         traversal_output = self.traverse_tree()
         traversal_tree = traversal_output[0]
         depth_map = traversal_output[1]
-        print(depth_map.items())
+        # print(depth_map.items())
         ids_to_depths = {x[1][0].id:x[0] for x in depth_map.items()}
 
         link_terminals=[(x.get_start().id,x.get_end().id) for x in self.links]
@@ -61,7 +61,7 @@ class Tree:
                 end_node_depth = ids_to_depths[end_node_id]
             else:
                 end_node_depth = start_node_depth + 1
-            print(start_node_depth, end_node_depth)
+            # print(start_node_depth, end_node_depth)
             if abs(end_node_depth-start_node_depth)>1:
                 if start_node_depth < end_node_depth:
                     ids_to_depths[end_node_id] = start_node_depth+1
@@ -72,8 +72,8 @@ class Tree:
 
 
         # print(depths_to_ids)
-        print(self.links)
-        print(ids_to_depths)
+        # print(self.links)
+        # print(ids_to_depths)
 
         array_tree_repr = []
 
@@ -81,7 +81,7 @@ class Tree:
 
         for id in ids_to_depths:
             current_depth = ids_to_depths[id]
-            print(current_depth)
+            # print(current_depth)
             # print(current_depth)
             if current_depth > max_depth:
                 # print(current_depth, max_depth)
@@ -107,15 +107,15 @@ class Tree:
                 # print(node_to_children)
 
         #print(array_tree_repr)
-        print(final_nodes)    
-        print(all_nodes)
+        # print(final_nodes)    
+        # print(all_nodes)
         # print(self.links)
         spanning_links = []
         for link in self.links:
-            print(link)
+            # print(link)
             if link.get_start().content in all_nodes or link.get_end().content in all_nodes:
                 spanning_links.append(link)
-        print(spanning_links)
+        # print(spanning_links)
         return(spanning_links, final_nodes, all_nodes)
     def traverse_tree(self, tranversal_type="dfs"):
         if tranversal_type == "dfs":
