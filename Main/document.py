@@ -97,7 +97,6 @@ class Document():
                     result_tree_nodes.append(node)
                     #If contents is already in total_nouns
                 else:
-                    #total_nouns.add(contents)
                     #Get that node's links
                     links = node.get_links()
                     result_tree_nodes.append(node)
@@ -105,27 +104,16 @@ class Document():
                     #Iterating through each link
                     for link in links:
                         #Getting the terminals (start and end of the link)
-                        terminals = link.get_terminals()
-                        #If there is a start and an end
-                        # if len(terminals) == 2:
-                        # print(f"{second_node.id}:{second_node.content}")
-                            #Takes the first node, and creates a link using it. !!!Should add this link to the node as well.
+                        terminals = link.get_terminals() 
                         link.set_start(existing_node)
+                        #If there is a start and an end
                         if len(terminals) == 2:
                             second_node = terminals[1]
                             if second_node:
                                 if second_node.content:  
                                     existing_node.add_link(link)                      
-                        # if second_node:
-                        #     link.set_end(second_node)
-                            #Adds the link to the total links
                         result_tree_links.append(link)
-                        
-        #print(result_tree_nodes)
-        # if len(result_tree_nodes) == 1:
-        #     return None
-        print(sentence_nodes)                
-        
+                                    
         result_tree = Tree(result_tree_nodes[0], result_tree_nodes[1], result_tree_links[0], 1)
         remaining_nodes = result_tree_nodes[2:]
         remaining_links= result_tree_links[1:]
@@ -151,40 +139,44 @@ class Document():
         total_contents = set()
         visited_contents = set()
         node_chains = {}
-        print(tree_nodes)
         for node_id in tree_nodes:
             if node_id not in total_ids and contents not in visited_contents:
                 output = self.recurse_node(tree_nodes[node_id], total_ids, visited_contents, 0)
                 node_chains[tree_nodes[node_id].content] = output
 
-        print("|||||||||||||||################|||||||||||||||||")
-        print(node_chains)
-        print(tree_nodes)
         return (node_chains, tree_nodes)
             
-
-
-
+#Recursive function to read every child of every node in the document.
     def recurse_node(self, node, visited_ids, visited_contents, depth):
+        #Array to hold the output of visited nodes
         total_dicts = []
-        print(node)
+        #If node is not none
         if node:
-            print(node.id, node.content)
+            #If both the node has not been visited via ID, AND its content
             if node.id not in visited_ids and node.content not in visited_contents:
-                print("Visiting links")
+                #Get all children of the node
                 node_links = node.get_links()
+                #Add this node to the visited node IDs
                 visited_ids.add(node.id)
+                #Add its contents to visited contents
                 visited_contents.add(node.content)   
+                #For each link, get the end, i.e. get all children
                 for link in node_links:
                     end = link.get_end()
                     if end:
+                        #If there is an end to the link, add the result of this function to its output array
                         total_dicts.append(self.recurse_node(end, visited_ids, visited_contents, depth+1))
+                #If there is a word in the node
                 if node.content:
+                    #Alias the node ID to its contents
                     total_dicts.append({node.id:node.content})
+                    #At the end of the recursive loop, we have found a terminal node with contents therefore we return an array of just this node's dictionary
                     return total_dicts
             else:
+                #If it is not unique it is added to the array as normal,and returned
                 total_dicts.append({node.id:node.content})
                 return total_dicts
         else:
+            #When node is none, return an empty array
             return total_dicts
         
