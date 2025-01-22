@@ -1,0 +1,12 @@
+digraph {
+	virus [label=virus]
+	coronavirus [label=coronavirus]
+	remedy [label=remedy]
+	honey [label=honey]
+	brit [label=brit]
+	alcohol -> coronavirus
+	alcohol -> coronavirus
+	cases -> coronavirus
+	wuhan -> coronavirus
+	virus -> symptoms
+}
