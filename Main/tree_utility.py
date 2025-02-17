@@ -48,6 +48,7 @@ def recurse_list(tree, visited_nodes, depth, prior_depth, node_positions):
     depth += 1
     #Each dict has to have at least 1 node
     first_id = next(iter(tree.keys()))
+    #print(first_id)
     #Each dict starts at 1, and increments from there.
     if first_id == 1:
         #Checks the length of the array, for later iteration
@@ -56,12 +57,15 @@ def recurse_list(tree, visited_nodes, depth, prior_depth, node_positions):
         total_nodes = []
         #Going through each depth in turn
         for i in range(1, items+1):
-            #Calling the next depth of tree, to find the next child node
-            next_node = recurse_list(tree[i],visited_nodes,depth, prior_depth, node_positions)
-            if next_node:
-                #If there is another node, append it as a sequential node of the prior depth item
-                node_positions[depth-1].append(next_node)
-                total_nodes.append(next_node)
+            if type(tree[i]) != str: 
+                #Calling the next depth of tree, to find the next child node
+                next_node = recurse_list(tree[i],visited_nodes,depth, prior_depth, node_positions)
+                if next_node:
+                    #If there is another node, append it as a sequential node of the prior depth item
+                    node_positions[depth-1].append(next_node)
+                    total_nodes.append(next_node)
+            else:
+                return tree
     else:
         return tree
 
@@ -234,5 +238,8 @@ def build_spanning_tree(node_dict, output):
             spanning_tree.add_link(link)
 
         #Convert the tree into an array, output
-        output = spanning_tree.tree_to_string()
-        return output
+        output = spanning_tree.get_recursed_tree()
+        if output:
+            return output, spanning_tree
+    else:
+        return "", ""

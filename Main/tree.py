@@ -1,11 +1,12 @@
 import node, link
 from collections import deque, defaultdict
+import re
 
 class Tree:
     def __init__(self, node_1:node.Node, node_2:node.Node, link:link.Link, id) -> None:
         self.id = id
         self.nodes = {node_1.id:node_1, node_2.id:node_2}
-        self.links = [link]
+        self.links = {link.id:link}
 
     def get_nodes(self):
         return self.nodes
@@ -14,7 +15,10 @@ class Tree:
         return self.links
 
     def add_node(self, node):
-        self.nodes[node.id] = node
+        #This allows for removing all non-english nouns. It can be removed if needed.
+        regexp = re.compile(r'[\u0000-\u007F]')
+        if regexp.search(node.content):
+            self.nodes[node.id] = node
 
     def remove_node(self, id):
         if id in self.nodes:
@@ -23,32 +27,54 @@ class Tree:
     def add_link(self, link):
         if link.end and link.end.id not in self.nodes:
             self.add_node(link.end)
-        self.links.append(link)
+        self.links[link.id] = link
+
 
     def add_node_link(self, id, link):
         if id in self.nodes:
             self.nodes[id].add_link(link)
             
     def remove_link(self, id):
-        self.links = [link for link in self.links if link.id != id]
+        self.links = {link.id:link for link in self.links if link.id != id}
 
     def __str__(self) -> str:
-        return "\n".join(str(link) for link in self.links)
+        return "\n".join([self.links[x] for x in self.links])
+    
+    def get_node_by_id(self, node_id):
+        if node_id in self.nodes:
+            return self.nodes[node_id]
+        
+    
+        
+    def union(self, tree):
+        nodes_to_check = tree.get_nodes()
+        links_to_check = tree.get_links()
+        node_contents = set([x.content for x in nodes_to_check])
+        current_contents = set([x.content for x in self.nodes])
+
+        intersection = node_contents.intersection(current_contents)
+    
+        #print(intersection)
+
+
+
+
+
+        return self
     
     #Takes all nodes and links, and outputs an array of various node selections.
-    def tree_to_string(self):
-        output_string = ""
-        output_array = []
+    def get_recursed_tree(self):
         #First, get the tree traversal
         traversal_output = self.traverse_tree()
         #We return the tree itself
         traversal_tree = traversal_output[0]
         #From here we want the Depth map
         depth_map = traversal_output[1]
+        #print(depth_map)
         #Converts an ID to its depth in the depth map
         ids_to_depths = {x[1][0].id:x[0] for x in depth_map.items()}
         #Finds all terminals from all the links in the tree
-        link_terminals=[(x.get_start().id,x.get_end().id) for x in self.links]
+        link_terminals=[(self.links[x].get_start().id,self.links[x].get_end().id) for x in self.links]
 
         #Iterating through links,
         for terminals in link_terminals:
@@ -63,10 +89,12 @@ class Tree:
                 if end_node_id in ids_to_depths:
                     end_node_depth = ids_to_depths[end_node_id]
                     start_node_depth = end_node_depth - 1
+
             if end_node_id in ids_to_depths:
                 end_node_depth = ids_to_depths[end_node_id]
             else:
-                end_node_depth = start_node_depth + 1
+                start_node_depth = 1
+                end_node_depth = 2
 
             #If the difference between the depths of the nodes is greater than 1, rearrange them
 
@@ -111,8 +139,8 @@ class Tree:
         #For all the links in the tree,
         for link in self.links:
             #If the link starts or ends with an allowed node, add it to a spanning tree
-            if link.get_start().content in all_nodes or link.get_end().content in all_nodes:
-                spanning_links.append(link)
+            if self.links[link].get_start().content in all_nodes or self.links[link].get_end().content in all_nodes:
+                spanning_links.append(self.links[link])
 
         #Return the spanning tree, the array of nodes at each level, and all nodes in total.
         return(spanning_links, final_nodes, all_nodes)
@@ -139,8 +167,8 @@ class Tree:
             result.append(node)
             depth_map[depth].append(node)
             for link in node.links:
-                if link.end:
-                    dfs(link.end, depth+1)
+                if node.links[link].end:
+                    dfs(node.links[link].end, depth+1)
 
         if self.nodes:
             start_node = self.nodes[next(iter(self.nodes))]
@@ -163,7 +191,7 @@ class Tree:
             current = queue.popleft()
             result.append(current)
             for link in current.links:
-                if link.end and link.end.id not in visited:
+                if current.links[link].end and current.links[link].end.id not in visited:
                     queue.append(link.end)
                     visited.add(link.end.id)
 

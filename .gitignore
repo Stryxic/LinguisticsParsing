@@ -97,6 +97,9 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.txt
+*.json
+*.png
 
 # Chutzpah Test files
 _Chutzpah*
@@ -396,3 +399,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+Main/articles/family-of-british-couple-detained-1.txt

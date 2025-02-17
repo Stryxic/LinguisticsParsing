@@ -13,7 +13,7 @@ class Node:
         self.id = id
         self.name = name
         self.content = content
-        self.links  = []
+        self.links  = {}
 
     def __repr__(self) -> str:
         return f"Node({self.id},{self.name})"
@@ -22,7 +22,7 @@ class Node:
         return f"{self.id}-{self.name}"
     
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, Node) and self.id == other.id and self.name == other.name and sorted(self.links,key=lambda x: x.id) == sorted(other.links,key=lambda x:x.id)
+        return isinstance(other, Node) and self.id == other.id and self.name == other.name and sorted(self.links,key=lambda x: self.links[x].id) == sorted(other.links,key=lambda x:other.links[x].id)
     
     def __hash__(self) -> int:
         return(hash(self.id))
@@ -37,10 +37,10 @@ class Node:
         self.id = id
 
     def add_link(self, link):
-        self.links.append(link)
+        self.links[link.id] = link
 
     def get_children(self):
-        return [link.get_end() for link in self.links if link.nature == linknature.LinkNature.CHILD]
+        return [self.links[link].get_end() for link in self.links if self.links[link].nature == linknature.LinkNature.CHILD]
     
     def get_name(self):
         return self.name

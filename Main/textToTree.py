@@ -7,10 +7,10 @@ class TreeConverter():
 
     def __init__(self) -> None:
         #Initializing the total nouns the overall tree will consist of. All the nodes will be part of this tree, although some may reoccur multiple times.
-        self.nouns = []
-        self.total_nodes = []
-        self.total_links = []
-        self.total_trees = []
+        self.nouns = {}
+        self.total_nodes = {}
+        self.total_links = {}
+        self.total_trees = {}
         self.node_count = 0
         self.link_count = 0
         self.tree_count = 0
@@ -19,10 +19,10 @@ class TreeConverter():
         self.nouns = noun_list
 
     def reset_contents(self):
-        self.nouns = []
-        self.total_nodes = []
-        self.total_links = []
-        self.total_trees = []
+        self.nouns = {}
+        self.total_nodes = {}
+        self.total_links = {}
+        self.total_trees = {}
         self.node_count = 0
         self.link_count = 0
         self.tree_count = 0
@@ -43,13 +43,13 @@ class TreeConverter():
             new_node.set_name("Noun")
             current_node = new_node
             current_node.content = noun
-            self.total_nodes.append(current_node)
+            self.total_nodes[current_node.id] = current_node
             sentence_nodes.append(current_node)
             if current_link:
                 current_link.set_end(current_node)
             self.link_count += 1
             current_link = Link(current_node, self.link_count, LinkNature.CHILD)
-            self.total_links.append(current_link)
+            self.total_links[current_link.id] = current_link
             sentence_links.append(current_link)
             current_node.add_link(current_link)
             node_index += 1

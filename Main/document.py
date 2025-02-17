@@ -10,9 +10,16 @@ class Document():
         self.text = ""
         self.trees = []
         self.total_tree = None
+        self.graph_nodes = []
+        self.graph_links = []
 
     def set_trees(self, trees):
         self.trees = trees
+
+    def set_graph_nodes(self, nodes):
+        self.graph_nodes = nodes
+    def set_graph_links(self, links):
+        self.graph_links = links 
 
 
     def trees_to_strings(self, transversal="dfs"):
@@ -80,11 +87,11 @@ class Document():
                     #Iterate through each link
                     for link in links:
                         #If that link has not already been added to result tree links
-                        if link not in result_tree_links:
+                        if links[link] not in result_tree_links:
                             #If the link has both a start and an end, add it to result_tree_links
-                            if len(link.get_terminals()) == 2:
-                                link_node_1 = link.get_start()
-                                link_node_2 = link.get_end()
+                            if len(links[link].get_terminals()) == 2:
+                                link_node_1 = links[link].get_start()
+                                link_node_2 = links[link].get_end()
                                 if link_node_1.content:
                                     if link_node_1 not in result_tree_nodes:
                                         result_tree_nodes.append(link_node_1)
@@ -92,7 +99,7 @@ class Document():
                                     if link_node_2 not in result_tree_nodes:
                                         result_tree_nodes.append(link_node_2)
 
-                                result_tree_links.append(link)
+                                result_tree_links.append(links[link])
                     #Add that node to the total array of all nodes
                     result_tree_nodes.append(node)
                     #If contents is already in total_nouns
@@ -104,20 +111,21 @@ class Document():
                     #Iterating through each link
                     for link in links:
                         #Getting the terminals (start and end of the link)
-                        terminals = link.get_terminals() 
-                        link.set_start(existing_node)
+                        terminals = links[link].get_terminals() 
+                        links[link].set_start(existing_node)
                         #If there is a start and an end
                         if len(terminals) == 2:
                             second_node = terminals[1]
                             if second_node:
                                 if second_node.content:  
-                                    existing_node.add_link(link)                      
-                        result_tree_links.append(link)
+                                    existing_node.add_link(links[link])                      
+                        result_tree_links.append(links[link])
                                     
         result_tree = Tree(result_tree_nodes[0], result_tree_nodes[1], result_tree_links[0], 1)
         remaining_nodes = result_tree_nodes[2:]
         remaining_links= result_tree_links[1:]
         added_ids = set()
+
 
         for node in remaining_nodes:
             result_tree.add_node(node)
@@ -162,7 +170,7 @@ class Document():
                 visited_contents.add(node.content)   
                 #For each link, get the end, i.e. get all children
                 for link in node_links:
-                    end = link.get_end()
+                    end = node_links[link].get_end()
                     if end:
                         #If there is an end to the link, add the result of this function to its output array
                         total_dicts.append(self.recurse_node(end, visited_ids, visited_contents, depth+1))
