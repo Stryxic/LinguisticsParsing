@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup, SoupStrainer
 import time
+from axion import parse_content
 # from seleniumrequests import Firefox, Chrome
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -10,6 +11,8 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+
+total_id = 1
 
 def extractGroundArticles():
     url = "https://ground.news/"
@@ -61,12 +64,23 @@ def pullArticles(service, url, article_name):
     # filename = "trump-davos"
     id = 1
     driver.close()
+    total_id = 1
     for url in all_urls:
         page_content = scrape_text(url, service)
-        f = open(f"articles/{article_name}-{id}.txt", "w", encoding="utf-8")
-        id += 1
-        # print(page_content)
-        f.write(page_content)
+        if page_content:
+
+
+        #JSON Signature integration
+            # parse_content(parse_content, total_id)
+            # total_id += 1
+
+
+
+
+            f = open(f"articles/{article_name}-{id}.txt", "w", encoding="utf-8")
+            id += 1
+            # print(page_content)
+            f.write(page_content)
 
 def scrape_text(url, service):
     driver = webdriver.Chrome(service=service)
@@ -80,6 +94,7 @@ def scrape_text(url, service):
     return " \n".join(article_strings)
 
 service=Service(ChromeDriverManager().install())
+
 
 # content = scrape_text("https://www.sfchronicle.com/crime/article/ziz-zizians-rationalism-group-20149075.php", service)
 # f = open("zizian.txt", "w", encoding="utf-8")

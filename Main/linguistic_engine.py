@@ -13,6 +13,7 @@ class Linguistic_Engine():
     def __init__(self):
         self.empty = True
         self.documents = {}
+        self.document_id = 1
         self.total_links = set()
         self.total_nodes = set()
 
@@ -32,13 +33,18 @@ class Linguistic_Engine():
             noun_sentences.append(parser.extract_nouns(sentence)) 
         return noun_sentences 
 
-    def construct_document(self, content, filename):
+    def construct_document(self, content, name):
         #Initializes the text parser
         parser = TextParser()
         noun_sentences = self.parse_content(parser, content)
         total_trees = nouns_to_tree(noun_sentences)
         document = Document()
         document.set_trees(total_trees)
+        document.set_text(content)
+        if name:
+            document.name = name
+        else:
+            name = "default"
         output, node_dict = document.trees_reordering()
         contents_to_id = {}
         build_links(contents_to_id, node_dict, output)
@@ -84,9 +90,9 @@ class Linguistic_Engine():
                                 # print(first_word, second_word)
                                 if first_word.strip() and second_word.strip():
                                     if first_word in total_nouns:
-                                        total_nouns[first_word].append(second_word)
+                                        total_nouns[first_word.lower().strip()].append(second_word.lower().strip())
                                     else:
-                                        total_nouns[first_word] = [second_word]
+                                        total_nouns[first_word.lower().strip()] = [second_word.lower().strip()]
 
                             # print(words)
 
@@ -101,6 +107,7 @@ class Linguistic_Engine():
 
         # prior_word = ""
         # held_nouns = {}
+
         first_nouns = set({x for x in total_nouns.keys()})
         shared_nouns = set()
         for noun in first_nouns:
@@ -109,7 +116,10 @@ class Linguistic_Engine():
                 if item in first_nouns:
                     shared_nouns.add(item)
         head_nouns = [x for x in first_nouns if x not in shared_nouns]
-        
+        document.set_total_nouns(total_nouns)
+        self.documents[self.document_id] = document
+        self.document_id += 1
+
 
         
         def recurse_sequential(items, word_dict, visited_words):
@@ -123,50 +133,3 @@ class Linguistic_Engine():
                 else:
                     return f"{item}"
                 
-        # distinct_words = set()
-        # distint_links = set()
-
-        # for head in head_nouns:
-        #     items = total_nouns[head]
-        #     visited_words = set()
-        #     items = recurse_sequential(items, total_nouns, visited_words)
-        #     words = items.split(" ")
-        #     for i in range(0, len(words)-1):
-        #         distinct_words.add(words[i])
-        #         distinct_words.add(words[i+1])
-        #         distint_links.add((words[i],words[i+1]))
-        
-        # # print(distinct_words)
-        # # print(distint_links)
-
-        # generateGraphViz(distinct_words, distint_links, filename)
-        # document.set_graph_links(distint_links)
-        # document.set_graph_nodes(distinct_words)
-
-        # self.total_nodes = self.total_nodes.union(distinct_words)
-        # self.total_links = self.total_links.union(distint_links)
-
-
-
-        # self.add_document(document)
-        
-            # for word in words:
-            #     distinct_words.add(word)
-            
-
-        # print(head_nouns)
-
-
-
-
-
-
-        # for tree in total_read_trees:
-        #     #extract_nouns(tree, "", held_nouns)
-        #     print(tree)
-            
-        #     print("#####")
-        #print(held_nouns)
-        # print(span_trees)
-       # print("\###########NEXT DOCUMENT###########\n")
-

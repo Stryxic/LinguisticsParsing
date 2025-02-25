@@ -7,19 +7,46 @@ from node import Node
 from link import Link
 from linknature import LinkNature
 from tree import Tree
+import fitz
 
-def generateGraphViz(distinct_nodes, viz_links, output_name):
+def pdf_to_text(file_location, output_location):
+    pdf_document = fitz.open(file_location)
+    output_location += ".txt"
+    with open(output_location, "w", encoding="utf-8") as text_file:
+        for page_number in range(len(pdf_document)):
+            page = pdf_document.load_page(page_number)
+            text = page.get_text()
+            text_file.write(text)
+    pdf_document.close()
+
+def generateGraphViz(distinct_nodes, viz_links, output_name, weightings, average):
     dot = Digraph()
     result_json = {}
 
-
+    colour = None
     for node in distinct_nodes:
+        if weightings[node.lower()] < average:
+            if weightings[node.lower()] < average/2:
+                colour = "red"
+            else:
+                colour = "firebrick2"
+        else:
+            colour = "steelblue1"
+
         result_json[node] = {}
         # if node in selected_nodes:
-        dot.node(node, node)
+        dot.node(node, node,color=colour)
     for edge in viz_links:
         # if edge[0] in selected_nodes or edge[1] in selected_nodes:
         dot.edge(edge[0],edge[1])
+        if edge[0] in result_json:
+            result_json[edge[0]][edge[1]] = 1
+        else:
+            result_json[edge[0]] = {}
+            result_json[edge[0]][edge[1]] = 1
+
+
+
         result_json[edge[0]][edge[1]] = {}
     dot.render(f'selections/{output_name}', format='png', cleanup=True)  # Saves as 'tree.png'
 

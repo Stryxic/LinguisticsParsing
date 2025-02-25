@@ -12,14 +12,31 @@ class Document():
         self.total_tree = None
         self.graph_nodes = []
         self.graph_links = []
+        self.total_nouns = None
+        self.context = None
+        self.noun_count = {}
+        self.name = ""
+
+    def set_text(self, text):
+        self.text = text
 
     def set_trees(self, trees):
         self.trees = trees
 
+    def set_total_nouns(self, nouns):
+        self.total_nouns = nouns
+
     def set_graph_nodes(self, nodes):
         self.graph_nodes = nodes
+
     def set_graph_links(self, links):
         self.graph_links = links 
+
+    def set_context(self, context):
+        self.context = context
+
+    # def generate_graph(self, filename):
+    #     generateGraphViz(self.graph_nodes, self.graph_links, filename)
 
 
     def trees_to_strings(self, transversal="dfs"):
@@ -73,6 +90,12 @@ class Document():
                 contents = node.content
                 id = node.id
                 id_to_node[id] = node
+
+                if contents.lower() not in self.noun_count:
+                    self.noun_count[contents.lower()] = 1
+                else:
+                    self.noun_count[contents.lower()] += 1
+
                 # print(node.content)
                 #If it has not been added to the set of visited nouns, create it.
                 if contents not in total_nouns:
