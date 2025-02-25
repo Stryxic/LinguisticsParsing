@@ -1,34 +1,42 @@
 import json
 import os
 import re
+from ordered_set import OrderedSet
 
 class Signature():
     def __init__(self, id):
         self.sig = None
         self.id = id
         self.total_words = set()
+        self.word_locations = {}
+        self.pairs = OrderedSet()
 
     def load_file(self, file):
         self.sig_json = json.load(file)
 
 
-    def extract_words(self, object):
+    def extract_words(self, object, prior_word):
         if type(object) == dict:
             for key in object:
                 self.total_words.add(key)
-                self.extract_words(object[key])
-                
+                self.pairs.add((prior_word, key))
+                self.word_locations[key] = object
+                self.extract_words(object[key], key)
+
         if type(object) == list:
             for item in object:
-                self.extract_words(item)
+                self.extract_words(item, prior_word)
             
         if type(object) == str:
             self.total_words.add(object)
+            self.pairs.add((prior_word, object))
 
     def find_words(self):
         for element in self.reduced_json:
-            self.extract_words(element)
-        print(self.total_words)
+            self.extract_words(element, "")
+        # print(self.total_words)
+        print(self.pairs)
+        self.word_keys = self.word_locations.keys()
 
     def reduce(self,filename):
         print("----")
@@ -346,6 +354,18 @@ for file in file_names:
         signatures.append(signature)
         
         message_count += 1
+
+
+total_output = {}
+
+
+# for element in signatures:
+#     if total_output == {}:
+#         total_output = element.reduced_json
+#     else:
+#         new_keys
+
+
 
 
 # output = [merge_json_files()]
